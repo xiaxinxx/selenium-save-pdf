@@ -16,6 +16,7 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.Thread.sleep;
 
@@ -66,20 +67,21 @@ public class DataDrivenDemo {
 
     @Test(dataProvider = "data")
     public void test(String originLanguage, String targetLanguage, String originText, String transText) {
-
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         driver.get("https://ai.sogou.com/product/text_translate/");  //替换为登录地址
 
-        WebElement language1 = driver.findElement(By.xpath("//*[@id=\"sourceLanguageCode\"]/div/div"));
-        WebElement language2 = driver.findElement(By.xpath("//*[@id=\"targetLanguageCode\"]/div/div"));
         WebElement input = driver.findElement(By.xpath("//*[@id=\"content\"]"));
         WebElement btn = driver.findElement(By.xpath("//*[@id=\"gatsby-focus-wrapper\"]/div/main/div/div[3]/div/span/section/div/div[1]/button"));
         WebElement result = driver.findElement(By.xpath("//*[@id=\"gatsby-focus-wrapper\"]/div/main/div/div[3]/div/span/section/div/div[2]/div/div"));
+        input.sendKeys("");
 
-        input.click();
-//        language1.click();
-        //language1.sendKeys("英语");
+        selectOriSelect(driver, originLanguage);
+        selectTargetSelect(driver, targetLanguage);
+
         input.sendKeys(originText);
+        doSleep();
         btn.click();
+        doSleep();
         String resultText = result.getText();
         List<String> row = null;
         if(transText.equals(resultText)){
@@ -96,9 +98,46 @@ public class DataDrivenDemo {
 
     public static void doSleep() {
         try {
-            sleep(3000);
+            sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void selectOriSelect(WebDriver driver, String lang){
+        driver.findElement(By.id("sourceLanguageCode")).click();
+        switch (lang){
+            case "自动检测语种":
+                driver.findElement(By.xpath("//li[1]")).click();
+
+                break;
+            case "中文":
+                driver.findElement(By.xpath("//li[2]")).click();
+
+                break;
+            case "英语":
+                driver.findElement(By.xpath("//li[3]")).click();
+                break;
+            case "日语":
+                driver.findElement(By.xpath("//li[4]")).click();
+                break;
+        }
+
+    }
+
+    public static void selectTargetSelect(WebDriver driver, String lang){
+        driver.findElement(By.id("targetLanguageCode")).click();
+        switch (lang){
+            case "中文":
+                driver.findElement(By.xpath("//div[3]/div/div/div/ul/li[1]")).click();
+                break;
+            case "英语":
+                driver.findElement(By.xpath("//div[3]/div/div/div/ul/li[2]")).click();
+                break;
+            case "日语":
+                driver.findElement(By.xpath("//div[3]/div/div/div/ul/li[3]")).click();
+                break;
+        }
+
     }
 }
