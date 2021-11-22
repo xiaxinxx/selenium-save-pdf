@@ -70,14 +70,14 @@ public class InterfacdeDataDrivenDemo {
     public void test(String originLanguage, String targetLanguage, String originText, String transText) {
         String url = "url";
         //处理 body
-        String body = "{\n" +
-                "    \"config\":{\n" +
-                "        \"source_language_code\":\""+originLanguage+"\",\n" +
-                "        \"target_language_code\":\""+targetLanguage+"\"\n" +
-                "    },\n" +
-                "    \"text\":\""+originText+"\"\n" +
-                "}";
+        Map<String,Object> req = new HashMap<>();
+        Map<String,String> lang = new HashMap<>();
+        lang.put("source_language_code",originLanguage);
+        lang.put("target_language_code",targetLanguage);
+        req.put("config",lang);
+        req.put("text",originText);
 
+        String body = JSONUtil.parseObj(req).toString();
 
         String response = HttpRequest.post(url)
                 .header("Appid","15Dy8oGpZg25DldDipPFqyM5HtQ")
@@ -98,6 +98,5 @@ public class InterfacdeDataDrivenDemo {
         rows.add(row);
 
     }
-
 
 }
